@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   SHUNYA — Sacred Design System
+   "The void containing infinite potential."
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ── */
+:root {
+  /* Colors — from SKILL.md */
+  --void-black: #050508;
+  --cosmic-indigo: #1a1a3e;
+  --cosmic-indigo-deep: #0f0f2a;
+  --bio-teal: #4ecdc4;
+  --bio-teal-dim: rgba(78, 205, 196, 0.3);
+  --bio-teal-glow: rgba(78, 205, 196, 0.15);
+  --parchment: #f5f0e8;
+  --parchment-dim: rgba(245, 240, 232, 0.6);
+  --parchment-ghost: rgba(245, 240, 232, 0.15);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Crimson Text', 'Georgia', serif;
+
+  /* Breath Rhythm */
+  --breath-duration: 8s; /* 4s in, 4s out */
+  --transition-sacred: 800ms ease-in-out;
+  --transition-reveal: 2000ms ease-in-out;
+  --transition-slow: 3000ms ease-in-out;
+
+  /* Spacing */
+  --space-breath: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* ── Reset & Sacred Defaults ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--void-black);
+  color: var(--parchment);
+  overflow: hidden;
+  width: 100vw;
+  height: 100dvh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* No scrollbars — ever */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Selection — sacred teal */
+::selection {
+  background: var(--bio-teal-dim);
+  color: var(--parchment);
+}
+
+/* ── Sacred Animations ── */
+
+/* Breath cycle: sine wave, 4s in / 4s out */
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes breathe-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--bio-teal-glow),
+                0 0 60px transparent;
+    opacity: 0.5;
+  }
+  50% {
+    box-shadow: 0 0 30px var(--bio-teal-dim),
+                0 0 80px var(--bio-teal-glow);
+    opacity: 1;
+  }
+}
+
+@keyframes sacred-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes cosmic-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ── Utility Classes ── */
+
+.sacred-text {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+
+.sacred-text-emphasis {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.breath-animate {
+  animation: breathe var(--breath-duration) ease-in-out infinite;
+}
+
+.breath-glow {
+  animation: breathe-glow var(--breath-duration) ease-in-out infinite;
+}
+
+.sacred-fade {
+  animation: sacred-fade-in var(--transition-reveal) ease-in-out forwards;
+  opacity: 0;
+}
+
+/* ── Cosmic Background ── */
+.cosmic-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(26, 26, 62, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(78, 205, 196, 0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(26, 26, 62, 0.2) 0%, transparent 50%),
+    var(--void-black);
+}
+
+/* ── Star Field (CSS only) ── */
+.starfield {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.starfield::before,
+.starfield::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(245, 240, 232, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 70%, rgba(245, 240, 232, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 30%, rgba(78, 205, 196, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, rgba(245, 240, 232, 0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(245, 240, 232, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 85%, rgba(78, 205, 196, 0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 45%, rgba(245, 240, 232, 0.2) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 50%, rgba(245, 240, 232, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 90%, rgba(78, 205, 196, 0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 40%, rgba(245, 240, 232, 0.15) 0%, transparent 100%);
+  animation: breathe calc(var(--breath-duration) * 2) ease-in-out infinite;
+}
+
+.starfield::after {
+  animation-delay: calc(var(--breath-duration) * -1);
+  opacity: 0.5;
+  background-image:
+    radial-gradient(1px 1px at 5% 55%, rgba(245, 240, 232, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 15%, rgba(78, 205, 196, 0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 80%, rgba(245, 240, 232, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 35%, rgba(245, 240, 232, 0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 95%, rgba(78, 205, 196, 0.2) 0%, transparent 100%);
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 640px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    font-size: 13px;
+  }
+}
+
+/* Safe area for notch devices */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
