@@ -20,7 +20,7 @@ const SVAPNA_CONTENT = {
   // More days can be added here following the same structure
 };
 
-export default function StageTwoSvapna({ day }) {
+export default function StageTwoSvapna({ day, onComplete }) {
   const [phase, setPhase] = useState('story'); // 'story', 'silence', 'done'
   const { completeDay } = useJourney();
   const { playVoice } = useVoiceover();
@@ -34,9 +34,17 @@ export default function StageTwoSvapna({ day }) {
 
   const handleSilenceComplete = () => {
     playVoice('/audio/voice/svapna-day-integrated.mp3');
-    completeDay(day); // Marks today as finished
+    
+    // If it's the last day of Svapna, move to Stage 3
+    if (day >= 21) {
+      if (onComplete) onComplete();
+    } else {
+      completeDay(day); // Marks today as finished
+    }
+    
     setPhase('done');
   };
+
 
   return (
     <div className="w-full h-full relative flex items-center justify-center p-8 z-20">

@@ -248,3 +248,51 @@ body {
     padding-right: env(safe-area-inset-right);
   }
 }
+
+/* ── Phase 3 & 4 Additions ── */
+
+.sacred-button {
+  background: none;
+  border: 1px solid rgba(245, 240, 232, 0.15);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 1.2s ease;
+  outline: none;
+}
+
+.sacred-button:hover {
+  border-color: rgba(245, 240, 232, 0.4);
+  color: rgba(245, 240, 232, 0.9) !important;
+  background: rgba(245, 240, 232, 0.02);
+}
+
+.shunya-textarea {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.shunya-textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.shunya-textarea::placeholder {
+  color: rgba(245, 240, 232, 0.15);
+  opacity: 1;
+}
+
+/* Collective presence dots */
+.presence-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--bio-teal);
+  border-radius: 50%;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* Transitions */
+.fade-in-slow {
+  animation: sacred-fade-in 4s ease-out forwards;
+}
+
