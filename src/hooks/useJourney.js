@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
 
-const JOURNEY_KEY = 'shunya_journey_data';
+const BASE_JOURNEY_KEY = 'shunya_journey_data';
 
 const DEFAULT_STATE = {
   stage: 0,                // 0: Onboarding, 1: Jagrat, 2: Svapna, 3: Sushupti
@@ -9,14 +10,29 @@ const DEFAULT_STATE = {
 };
 
 export function useJourney() {
+  const { user, isLoaded } = useUser();
+  const userId = user?.id || 'anonymous';
+  const journeyKey = `${BASE_JOURNEY_KEY}_${userId}`;
+
   const [journey, setJourney] = useState(() => {
     try {
-      const saved = localStorage.getItem(JOURNEY_KEY);
+      const saved = localStorage.getItem(journeyKey);
       return saved ? JSON.parse(saved) : DEFAULT_STATE;
     } catch {
       return DEFAULT_STATE;
     }
   });
+
+  // Re-load journey data when user changes
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      const saved = localStorage.getItem(journeyKey);
+      setJourney(saved ? JSON.parse(saved) : DEFAULT_STATE);
+    } catch {
+      setJourney(DEFAULT_STATE);
+    }
+  }, [journeyKey, isLoaded]);
 
   // Derived state: check if journey is locked for today
   const isLocked = useMemo(() => {
@@ -45,7 +61,7 @@ export function useJourney() {
 
   const saveJourney = (data) => {
     setJourney(data);
-    localStorage.setItem(JOURNEY_KEY, JSON.stringify(data));
+    localStorage.setItem(journeyKey, JSON.stringify(data));
   };
 
   const advanceStage = (nextStage) => {

@@ -44,8 +44,18 @@ export default function StageFourTuriya({ day }) {
 
   useEffect(() => {
     if (phase === PHASES.ARRIVAL) {
+      playVoice('/audio/voice/turiya-arrival.mp3');
       const timer = setTimeout(() => setPhase(PHASES.FEED), 4000);
       return () => clearTimeout(timer);
+    }
+    if (phase === PHASES.SILENCE) {
+      playVoice('/audio/voice/turiya-silence-start.mp3');
+    }
+    if (phase === PHASES.SHARE) {
+      playVoice('/audio/voice/turiya-share-prompt.mp3');
+    }
+    if (phase === PHASES.DONE) {
+      playVoice('/audio/voice/turiya-done.mp3');
     }
   }, [phase]);
 

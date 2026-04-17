@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
 
 /* ═══════════════════════════════════════════════════════════
    SHUNYA — Sacred Design System
@@ -19,8 +20,9 @@
   --parchment-ghost: rgba(245, 240, 232, 0.15);
 
   /* Typography */
-  --font-display: 'Cormorant Garamond', 'Georgia', serif;
-  --font-body: 'Crimson Text', 'Georgia', serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Crimson Text', serif;
+  --font-ui: 'Inter', sans-serif;
 
   /* Breath Rhythm */
   --breath-duration: 8s; /* 4s in, 4s out */

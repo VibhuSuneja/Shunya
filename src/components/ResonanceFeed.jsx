@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useVoiceover } from '../hooks/useVoiceover';
 
 /**
  * ResonanceFeed — The Mirror
@@ -44,8 +45,15 @@ export default function ResonanceFeed({ day, onComplete }) {
   const [showPulse, setShowPulse] = useState(false);
 
   const observation = getDailyObservation(day);
+  const obsIndex = day % SEED_OBSERVATIONS.length;
+  const { playVoice } = useVoiceover();
 
   const isDevMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+
+  // Play voiceover when observation appears
+  useEffect(() => {
+    playVoice(`/audio/voice/res-obs-${obsIndex}.mp3`);
+  }, [obsIndex]);
 
   // Auto-advance after 22s if no interaction
   useEffect(() => {

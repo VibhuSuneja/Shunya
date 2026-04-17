@@ -64,63 +64,63 @@ const SUSHUPTI_CONTENT = {
   29: {
     inquiry: "The Gita says you are neither the body nor the mind. Then — what are you?",
     reflection: "That which cannot be cut by weapons, burned by fire, or drowned by water.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-29-inquiry.mp3", reflection: "/audio/voice/sushupti-29-reflection.mp3" }
   },
   30: {
     inquiry: "You have been breathing all day without trying. Who breathes?",
     reflection: "The universe breathes through what you call yourself. You are the breath.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-30-inquiry.mp3", reflection: "/audio/voice/sushupti-30-reflection.mp3" }
   },
   31: {
     inquiry: "In this moment — are you reading, or is reading happening through you?",
     reflection: "The river does not flow. Flow is what the river is.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-31-inquiry.mp3", reflection: "/audio/voice/sushupti-31-reflection.mp3" }
   },
   32: {
     inquiry: "Buddha said there is no fixed self. Ramana said there is only Self. Are they contradicting?",
     reflection: "The fixed 'me' is empty. The vast 'I AM' is everything. Both are pointing at the same truth.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-32-inquiry.mp3", reflection: "/audio/voice/sushupti-32-reflection.mp3" }
   },
   33: {
     inquiry: "When you say 'I am tired' — which part is tired? Is the 'I' also tired?",
     reflection: "The witness is never tired. It simply witnesses tiredness, as the sun witnesses clouds.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-33-inquiry.mp3", reflection: "/audio/voice/sushupti-33-reflection.mp3" }
   },
   34: {
     inquiry: "What if the sense of being a separate self is itself just another thought being observed?",
     reflection: "The cage is made of the same light as the bird. Look closely.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-34-inquiry.mp3", reflection: "/audio/voice/sushupti-34-reflection.mp3" }
   },
   35: {
     inquiry: "Can you find the boundary where 'you' end and the rest of the world begins?",
     reflection: "The skin is a meeting point — not a wall. You are more porous than you think.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-35-inquiry.mp3", reflection: "/audio/voice/sushupti-35-reflection.mp3" }
   },
   // Days 36–45: Third week — the observer stabilizing
   36: {
     inquiry: "Right now — notice the noticing. Who notices the noticer?",
     reflection: "The regression stops. The final noticer is not an object. It is the subject itself.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-36-inquiry.mp3", reflection: "/audio/voice/sushupti-36-reflection.mp3" }
   },
   37: {
     inquiry: "The universe is 13.8 billion years old. You are made of its matter. How old are you — really?",
     reflection: "Your atoms have been stars. Stars have been your atoms. The universe is experiencing itself through you.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-37-inquiry.mp3", reflection: "/audio/voice/sushupti-37-reflection.mp3" }
   },
   38: {
     inquiry: "When you are in deep flow — who is there?",
     reflection: "Flow is what happens when the separate self dissolves into the doing. That is Sakshi in action.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-38-inquiry.mp3", reflection: "/audio/voice/sushupti-38-reflection.mp3" }
   },
   39: {
     inquiry: "If all your thoughts are objects in awareness — what is awareness itself?",
     reflection: "Awareness has no shape, no color, no weight. And yet it is the most intimate thing you know.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-39-inquiry.mp3", reflection: "/audio/voice/sushupti-39-reflection.mp3" }
   },
   40: {
     inquiry: "Is there a single moment — right now — when you are not aware?",
     reflection: "Awareness is the one constant. Even in the awareness of sleep — awareness persists.",
-    audio: { inquiry: "", reflection: "" }
+    audio: { inquiry: "/audio/voice/sushupti-40-inquiry.mp3", reflection: "/audio/voice/sushupti-40-reflection.mp3" }
   },
 };
 
