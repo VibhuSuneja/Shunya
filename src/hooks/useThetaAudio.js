@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 
 /**
  * useThetaAudio — Theta Wave Binaural Beat Generator
@@ -115,6 +115,44 @@ export function useThetaAudio() {
       ctx.currentTime + duration
     );
   }, []);
+
+  /**
+   * Duck audio (lower volume momentarily, e.g. for voiceover)
+   */
+  const duckAudio = useCallback(() => {
+    const ctx = audioCtxRef.current;
+    const gain = gainRef.current;
+    if (!ctx || !gain || !isPlaying) return;
+
+    // Use max to avoid exponential ramp to 0, which is an error in some browers.
+    const targetVolume = Math.max(MAX_VOLUME * 0.3, 0.001);
+    
+    gain.gain.cancelScheduledValues(ctx.currentTime);
+    gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.001), ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(targetVolume, ctx.currentTime + 1);
+  }, [isPlaying]);
+
+  /**
+   * Restore audio after ducking
+   */
+  const unduckAudio = useCallback(() => {
+    const ctx = audioCtxRef.current;
+    const gain = gainRef.current;
+    if (!ctx || !gain || !isPlaying) return;
+
+    gain.gain.cancelScheduledValues(ctx.currentTime);
+    gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.001), ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(MAX_VOLUME, ctx.currentTime + 2);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    window.addEventListener('shunya-duck-audio', duckAudio);
+    window.addEventListener('shunya-unduck-audio', unduckAudio);
+    return () => {
+      window.removeEventListener('shunya-duck-audio', duckAudio);
+      window.removeEventListener('shunya-unduck-audio', unduckAudio);
+    };
+  }, [duckAudio, unduckAudio]);
 
   /**
    * Stop and clean up all audio resources.

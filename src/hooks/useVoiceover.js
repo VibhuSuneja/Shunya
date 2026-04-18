@@ -19,12 +19,21 @@ export function useVoiceover() {
     const startPlaying = () => {
       audio.src = src;
       audio.volume = 0.8;
+      
+      // Duck background audio when voiceover starts
+      window.dispatchEvent(new Event('shunya-duck-audio'));
+      
       playPromiseRef.current = audio.play();
+      
+      audio.onended = () => {
+        window.dispatchEvent(new Event('shunya-unduck-audio'));
+      };
       
       playPromiseRef.current.catch(e => {
         if (e.name !== 'AbortError') {
           console.warn('Voiceover playback issue:', e);
         }
+        window.dispatchEvent(new Event('shunya-unduck-audio'));
         playPromiseRef.current = null;
       });
     };
@@ -50,6 +59,7 @@ export function useVoiceover() {
 
   const stopVoice = useCallback(() => {
     const audio = audioRef.current;
+    window.dispatchEvent(new Event('shunya-unduck-audio'));
     if (playPromiseRef.current) {
       playPromiseRef.current.then(() => {
         audio.pause();
@@ -64,6 +74,7 @@ export function useVoiceover() {
   useEffect(() => {
     return () => {
       const audio = audioRef.current;
+      window.dispatchEvent(new Event('shunya-unduck-audio'));
       if (playPromiseRef.current) {
         playPromiseRef.current.then(() => {
           audio.pause();

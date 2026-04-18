@@ -1,82 +1,107 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useVoiceover } from '../hooks/useVoiceover';
+import { useAuth } from '@clerk/clerk-react';
 
-/**
- * ResonanceFeed — The Mirror
- *
- * One observation from the community. No author name. No timestamp.
- * Just the raw inner truth another traveler left behind.
- *
- * A single resonance button — a gentle pulse.
- * Meaning: "I felt this too."
- *
- * After resonating (or after 20s) — moves forward.
- * No pressure to respond. Witnessing is enough.
- *
- * In production: fetch from API. For now — curated seed content.
- */
-
-// Seed observations — written in the authentic inner-voice of the practice
-const SEED_OBSERVATIONS = [
-  "I noticed I was afraid of silence today. Not the silence itself — but what might surface in it.",
-  "I caught myself performing even when alone. Composing sentences no one will ever read. For an imaginary audience.",
-  "The gap between my thoughts was longer today. For a moment — I couldn't find where 'I' was. It was not frightening. It was vast.",
-  "I am learning that boredom is just withdrawal. The body demanding its dopamine tax. I sat with it until it dissolved.",
-  "Something shifted in week three. I stopped fighting the silence. I started listening to it.",
-  "I realized my loneliness was not about being alone. It was about not knowing how to be with myself.",
-  "My mind kept pulling toward my phone. Each time I noticed — something deepened. The noticing itself became the practice.",
-  "Today the question landed differently: who is tired? I looked. The witness was not tired. The witness was watching tiredness.",
-  "I felt the collective stillness today. Knowing others are sitting — somewhere — it changed something in my chest.",
-  "I stopped trying to feel peaceful. The moment I stopped trying — something like peace arrived on its own.",
-  "Three weeks in. I don't scroll in bed anymore. The craving is still there, but quieter. Like a radio losing signal.",
-  "I noticed I narrate my life to myself constantly. A running commentary. Today I turned it off for seven minutes. Seven minutes of just — being.",
-  "The observer has no face. No history. No anxiety. I've started to suspect that's what I actually am.",
-  "Being with people feels different now. Less performance. More presence. They notice something has changed. I don't explain.",
-];
-
-function getDailyObservation(day) {
-  return SEED_OBSERVATIONS[day % SEED_OBSERVATIONS.length];
-}
+const API_URL = 'http://localhost:5000/api';
 
 export default function ResonanceFeed({ day, onComplete }) {
   const [hasResonated, setHasResonated] = useState(false);
-  const [resonanceCount] = useState(() => Math.floor(Math.random() * 40) + 12);
+  const [observation, setObservation] = useState(null);
+  const [resonanceCount, setResonanceCount] = useState(0);
   const [showPulse, setShowPulse] = useState(false);
-
-  const observation = getDailyObservation(day);
-  const obsIndex = day % SEED_OBSERVATIONS.length;
+  const [scriptOver, setScriptOver] = useState(false);
+  
+  const { getToken } = useAuth();
   const { playVoice } = useVoiceover();
-
   const isDevMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+
+  useEffect(() => {
+    let active = true;
+    async function loadObservation() {
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const res = await fetch(`${API_URL}/resonance/feed?day=${day}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok && active) {
+          const data = await res.json();
+          if (data.observation) {
+            setObservation(data.observation);
+            setResonanceCount(data.observation.resonances || 0);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load observation", err);
+      }
+    }
+    loadObservation();
+    return () => { active = false };
+  }, [day, getToken]);
+
+  const obsIndex = day % 14; 
 
   // Play voiceover when observation appears
   useEffect(() => {
-    playVoice(`/audio/voice/res-obs-${obsIndex}.mp3`);
-  }, [obsIndex]);
+    if (observation) {
+      setScriptOver(false); 
+      playVoice(`/audio/voice/res-obs-${obsIndex}.mp3`);
+
+      // Trigger button and prompt after first sentence (approx 6s)
+      const timer = setTimeout(() => {
+        setScriptOver(true);
+        playVoice('/audio/voice/turiya-feed-transition.mp3');
+      }, 6000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [observation, obsIndex, playVoice]);
+
+  // Keep the listener as a fallback or for other events
+  useEffect(() => {
+    const handleScriptEnd = () => setScriptOver(true);
+    window.addEventListener('shunya-unduck-audio', handleScriptEnd);
+    return () => window.removeEventListener('shunya-unduck-audio', handleScriptEnd);
+  }, []);
 
   // Auto-advance after 22s if no interaction
   useEffect(() => {
+    if (!observation) return;
     const timer = setTimeout(() => {
       if (onComplete) onComplete();
     }, isDevMode ? 8000 : 22000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [observation, isDevMode, onComplete]);
 
-  const handleResonate = () => {
-    if (hasResonated) return;
+  const handleResonate = async () => {
+    if (hasResonated || !observation) return;
     setHasResonated(true);
     setShowPulse(true);
 
-    // Save to localStorage — queued for backend sync
-    const resonances = JSON.parse(localStorage.getItem('shunya_resonances') || '[]');
-    resonances.push({ day, timestamp: new Date().toISOString(), type: 'resonance' });
-    localStorage.setItem('shunya_resonances', JSON.stringify(resonances));
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const res = await fetch(`${API_URL}/resonance/${observation._id}/pulse`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setResonanceCount(data.resonances);
+      }
+    } catch (err) {
+      console.error("Failed to pulse resonance", err);
+    }
 
     setTimeout(() => {
       if (onComplete) onComplete();
     }, isDevMode ? 3000 : 5000);
   };
+
+  if (!observation) return null;
 
   return (
     <motion.div
@@ -104,7 +129,7 @@ export default function ResonanceFeed({ day, onComplete }) {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1, duration: 4, ease: [0.37, 0, 0.63, 1] }}
       >
-        {observation}
+        {observation.text}
       </motion.blockquote>
 
       {/* Anonymous attribution */}
@@ -127,8 +152,8 @@ export default function ResonanceFeed({ day, onComplete }) {
       <motion.div
         className="flex flex-col items-center gap-4"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 5, duration: 3 }}
+        animate={{ opacity: scriptOver ? 1 : 0 }}
+        transition={{ duration: 3 }}
       >
         <ResonanceButton
           onResonate={handleResonate}
@@ -176,8 +201,6 @@ export default function ResonanceFeed({ day, onComplete }) {
 
 /**
  * ResonanceButton — The single sacred interaction in Stage 4
- * Not a like button. Not a heart. A pulse.
- * One gentle circle that expands on activation.
  */
 function ResonanceButton({ onResonate, hasResonated, showPulse }) {
   return (
@@ -196,7 +219,6 @@ function ResonanceButton({ onResonate, hasResonated, showPulse }) {
       transition={{ duration: 0.8 }}
       aria-label="Resonate — I felt this too"
     >
-      {/* Core circle */}
       <motion.div
         style={{
           width: '28px',
@@ -217,7 +239,6 @@ function ResonanceButton({ onResonate, hasResonated, showPulse }) {
         }
       />
 
-      {/* Pulse ring — expands on resonance */}
       {showPulse && (
         <>
           <motion.div

@@ -274,13 +274,13 @@ When Shunya has done its work — it can close. The stillness will have spread p
 | Phase | Focus | Status |
 |---|---|---|
 | 0 | Vision & SKILL.md | ✅ Complete |
-| 1 | Sacred onboarding (first 10 min experience) | 🔲 Next |
-| 2 | Stage 1 — Jagrat (cosmic UI + question engine) | 🔲 |
-| 3 | Stage 2 — Svapna (breath-paced content + silence gaps) | 🔲 |
-| 4 | Stage 3 — Sushupti (observer inquiry + presence indicators) | 🔲 |
-| 5 | Stage 4 — Turiya (resonance community) | 🔲 |
-| 6 | Stage 5 — Kevala (graduation ceremony + guide system) | 🔲 |
-| 7 | Dana financial model | 🔲 |
+| 1 | Sacred onboarding (first 10 min experience) | ✅ Complete |
+| 2 | Stage 1 — Jagrat (cosmic UI + question engine) | ✅ Complete |
+| 3 | Stage 2 — Svapna (breath-paced content + silence gaps) | ✅ Complete |
+| 4 | Stage 3 — Sushupti (observer inquiry + presence indicators) | ✅ Complete |
+| 5 | Stage 4 — Turiya (resonance community) | ✅ Complete |
+| 6 | Stage 5 — Kevala (graduation ceremony + guide system) | ✅ Complete |
+| 7 | Dana financial model | 🔲 Next |
 | 8 | Mobile optimization | 🔲 |
 | 9 | Institutional partnerships | 🔲 |
 | 10 | DAO / Crypto funding layer | 🔲 |

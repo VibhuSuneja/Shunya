@@ -17,14 +17,14 @@ import DailyLock from './components/DailyLock';
 import LandingPage from './components/LandingPage';
 
 export default function App() {
-  const { stage, advanceStage, isLocked, currentDay } = useJourney();
+  const { stage, advanceStage, isLocked, currentDay, loading: journeyLoading } = useJourney();
   const { isLoaded: clerkLoaded } = useUser();
   const audio = useThetaAudio();
   const [mute, setMute] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
 
-  if (!clerkLoaded) {
+  if (!clerkLoaded || journeyLoading) {
     return (
       <main className="w-full h-full cosmic-bg flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-t-2 border-[#4ecdc4] animate-spin opacity-20" />

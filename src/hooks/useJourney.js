@@ -1,43 +1,55 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 
-const BASE_JOURNEY_KEY = 'shunya_journey_data';
+const API_URL = 'http://localhost:5000/api';
 
 const DEFAULT_STATE = {
-  stage: 0,                // 0: Onboarding, 1: Jagrat, 2: Svapna, 3: Sushupti
-  lastCompletedDay: 0,     // Total days completed across the 90-day ritual
-  lastSessionTimestamp: null // ISO string of the last completed session
+  stage: 0,
+  lastCompletedDay: 0,
+  lastSessionTimestamp: null
 };
 
 export function useJourney() {
-  const { user, isLoaded } = useUser();
-  const userId = user?.id || 'anonymous';
-  const journeyKey = `${BASE_JOURNEY_KEY}_${userId}`;
+  const { isLoaded: userLoaded } = useUser();
+  const { getToken, userId } = useAuth();
 
-  const [journey, setJourney] = useState(() => {
-    try {
-      const saved = localStorage.getItem(journeyKey);
-      return saved ? JSON.parse(saved) : DEFAULT_STATE;
-    } catch {
-      return DEFAULT_STATE;
+  const [journey, setJourney] = useState(DEFAULT_STATE);
+  const [loading, setLoading] = useState(true);
+
+  // Load journey data from backend
+  const fetchState = useCallback(async () => {
+    if (!userLoaded || !userId) {
+      setLoading(false);
+      return;
     }
-  });
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API_URL}/journey/state`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setJourney({
+          stage: data.stage ?? 0,
+          lastCompletedDay: data.lastCompletedDay ?? 0,
+          lastSessionTimestamp: data.lastSessionTimestamp
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load journey state", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [userLoaded, userId, getToken]);
 
-  // Re-load journey data when user changes
   useEffect(() => {
-    if (!isLoaded) return;
-    try {
-      const saved = localStorage.getItem(journeyKey);
-      setJourney(saved ? JSON.parse(saved) : DEFAULT_STATE);
-    } catch {
-      setJourney(DEFAULT_STATE);
-    }
-  }, [journeyKey, isLoaded]);
+    fetchState();
+  }, [fetchState]);
 
   // Derived state: check if journey is locked for today
   const isLocked = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('dev') === 'true') return false; // Dev override
+    if (params.get('dev') === 'true') return false; 
     if (!journey.lastSessionTimestamp) return false;
 
     const lastTime = new Date(journey.lastSessionTimestamp).getTime();
@@ -59,28 +71,63 @@ export function useJourney() {
     }
   }, [journey.stage]);
 
-  const saveJourney = (data) => {
-    setJourney(data);
-    localStorage.setItem(journeyKey, JSON.stringify(data));
+  const advanceStage = async (nextStage) => {
+    setJourney(prev => ({ ...prev, stage: nextStage }));
+    try {
+      const token = await getToken();
+      await fetch(`${API_URL}/journey/advance`, {
+        method: 'POST',
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nextStage })
+      });
+    } catch (err) {
+      console.error("Failed to advance stage", err);
+    }
   };
 
-  const advanceStage = (nextStage) => {
-    saveJourney({ ...journey, stage: nextStage });
+  const completeDay = async (dayIndex) => {
+    const nextCompletedDay = Math.max(journey.lastCompletedDay, dayIndex);
+    const ts = new Date().toISOString();
+    
+    setJourney(prev => ({
+      ...prev,
+      lastCompletedDay: nextCompletedDay,
+      lastSessionTimestamp: ts
+    }));
+
+    try {
+      const token = await getToken();
+      await fetch(`${API_URL}/journey/advance`, {
+        method: 'POST',
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ dayIndex })
+      });
+    } catch (err) {
+      console.error("Failed to complete day", err);
+    }
   };
 
-  const completeDay = (dayIndex) => {
-    // Only advance if it's the next day in sequence
-    // This allows re-visiting the same day if they somehow get stuck, 
-    // but updates the timestamp only if they finished a new ritual.
-    saveJourney({
-      ...journey,
-      lastCompletedDay: Math.max(journey.lastCompletedDay, dayIndex),
-      lastSessionTimestamp: new Date().toISOString()
-    });
-  };
-
-  const resetJourney = () => {
-    saveJourney(DEFAULT_STATE);
+  const resetJourney = async () => {
+    setJourney(DEFAULT_STATE);
+    try {
+      const token = await getToken();
+      await fetch(`${API_URL}/journey/advance`, {
+        method: 'POST',
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reset: true })
+      });
+    } catch (err) {
+      console.error("Failed to reset journey", err);
+    }
   };
 
   const currentDay = journey.lastCompletedDay + 1;
@@ -92,6 +139,7 @@ export function useJourney() {
     isLocked,
     advanceStage, 
     completeDay,
-    resetJourney 
+    resetJourney,
+    loading
   };
 }
