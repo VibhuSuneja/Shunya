@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useVoiceover } from '../hooks/useVoiceover';
 import { useAuth } from '@clerk/clerk-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function ResonanceFeed({ day, onComplete }) {
   const [hasResonated, setHasResonated] = useState(false);
