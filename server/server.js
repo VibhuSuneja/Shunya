@@ -36,6 +36,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shunya')
 // --- API ROUTES ---
 
 // Health check
+app.get('/', (req, res) => res.send('Shunya API is breathing...'));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 // 1. GET User State
